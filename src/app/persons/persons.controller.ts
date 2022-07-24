@@ -7,7 +7,11 @@ export class PersonsController {
   constructor(private readonly personService: PersonsService) {}
 
   @Post()
-  async createPerson(@Body() data: CreatePersonDto) {
-    return await this.personService.create(data);
+  async createPerson(@Body() data: CreatePersonDto[]) {
+    const result = [];
+    for (const iten of data) {
+      result.push(await this.personService.create(iten));
+    }
+    return result;
   }
 }
