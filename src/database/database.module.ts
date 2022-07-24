@@ -20,7 +20,7 @@ import { UserEntity } from 'src/app/users/entities/users.entity';
         PersonsEntity,
         OriginEntity,
       ],
-      synchronize: true,
+      synchronize: !process.env.NODE_ENV,
     }),
   ],
 })

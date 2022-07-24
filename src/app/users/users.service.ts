@@ -5,13 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { get } from 'http';
-import {
-  FindConditions,
-  FindOneOptions,
-  getRepository,
-  Repository,
-} from 'typeorm';
+import { FindConditions, getRepository, Repository } from 'typeorm';
 import {
   personSerialize,
   userSerializer,

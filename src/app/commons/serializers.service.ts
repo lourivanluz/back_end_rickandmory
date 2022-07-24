@@ -8,6 +8,7 @@ export const personSerialize = (data: PersonsEntity) => {
 };
 
 export const userSerializer = (user: UserEntity) => {
-  const { password, createdAt, ...result } = user;
-  return result;
+  delete user.password;
+  delete user.createdAt;
+  return user;
 };
