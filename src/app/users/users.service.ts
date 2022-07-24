@@ -23,6 +23,7 @@ export class UsersService {
 
   async findAll() {
     const users = await this.userRepository.find({
+      select: ['id', 'name', 'email'],
       relations: ['favorites'],
     });
     return users;

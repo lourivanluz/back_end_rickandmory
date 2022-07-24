@@ -1,4 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { PersonsService } from './persons.service';
 
@@ -6,6 +7,7 @@ import { PersonsService } from './persons.service';
 export class PersonsController {
   constructor(private readonly personService: PersonsService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async createPerson(@Body() data: CreatePersonDto[]) {
     const result = [];
