@@ -1,13 +1,5 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginDto } from 'src/app/users/dto/login.dto';
 import { AuthService } from './auth.service';
 
 @Controller('api/v1/')

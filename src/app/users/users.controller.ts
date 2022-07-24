@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { getRepository } from 'typeorm';
-import { personSerialize } from '../commons/serializers.service';
 import { CreatePersonDto } from '../persons/dto/createPerson.dto';
 import { PersonsEntity } from '../persons/entities/persons.entity';
 import { PersonsService } from '../persons/persons.service';
