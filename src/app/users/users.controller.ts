@@ -10,6 +10,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { getRepository } from 'typeorm';
+import { FavoritePersonDto } from '../persons/dto/favoritePerson.dto';
+import { PersonsEntity } from '../persons/entities/persons.entity';
 import { UserDtoCreate, UserDtoUpdate } from './dto/user.dto';
 import { UsersService } from './users.service';
 
@@ -29,6 +32,28 @@ export class UsersController {
   async createUser(@Body() body: UserDtoCreate) {
     return await this.userService.createUser(body);
   }
+
+  @Post(':id/favorites')
+  async createFavorite(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: FavoritePersonDto[],
+  ) {
+    const persons = [];
+    for (const bodyIten of body) {
+      const personRepo = getRepository(PersonsEntity);
+      const person = await personRepo.findOne({
+        where: { name: bodyIten.name },
+      });
+      if (person) persons.push(person);
+    }
+
+    return await this.userService.bindUserPerson(id, persons);
+  }
+  @Get(':id/favorites')
+  async getFavorite(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.userService.findFavorites(id);
+  }
+
   @Patch(':id')
   async updateUser(
     @Param('id', new ParseUUIDPipe()) id: string,

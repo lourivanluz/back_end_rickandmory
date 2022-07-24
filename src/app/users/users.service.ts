@@ -5,7 +5,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindConditions, FindOneOptions, Repository } from 'typeorm';
+import { get } from 'http';
+import {
+  FindConditions,
+  FindOneOptions,
+  getRepository,
+  Repository,
+} from 'typeorm';
+import {
+  personSerialize,
+  userSerializer,
+} from '../commons/serializers.service';
+import { PersonsEntity } from '../persons/entities/persons.entity';
 import { UserDtoCreate, UserDtoUpdate } from './dto/user.dto';
 import { UserEntity } from './entities/users.entity';
 
@@ -17,24 +28,50 @@ export class UsersService {
   ) {}
 
   async findAll() {
-    return await this.userRepository.find({ select: ['id', 'name', 'email'] });
+    const users = await this.userRepository.find({
+      relations: ['favorites'],
+    });
+    return users;
   }
 
-  async findOneOrFail(
-    conditions: FindConditions<UserEntity>,
-    options?: FindOneOptions<UserEntity>,
-  ) {
+  async findFavorites(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: ['favorites'],
+    });
+    if (!user) throw new NotFoundException('Usuario não encontrado');
+    if (user.favorites) {
+      const favoritesNames = user.favorites.map((item) => item.name);
+      const result = [];
+      for (const name of favoritesNames) {
+        const personRepo = getRepository(PersonsEntity);
+        result.push(
+          personSerialize(
+            await personRepo.findOne(
+              { name: name },
+              { relations: ['origin', 'location', 'episodes'] },
+            ),
+          ),
+        );
+      }
+
+      return result;
+    }
+    return user;
+  }
+
+  async findOneOrFail(conditions: FindConditions<UserEntity>) {
     try {
       return await this.userRepository.findOneOrFail(conditions);
     } catch (error) {
-      throw new NotFoundException(error.error);
+      throw new NotFoundException('Usuario não encontrado');
     }
   }
 
   async createUser(data: UserDtoCreate) {
     const user = this.userRepository.create(data);
     try {
-      return this.serializer(await this.userRepository.save(user));
+      return userSerializer(await this.userRepository.save(user));
     } catch (error) {
       throw new ConflictException('Usuario ja existe');
     }
@@ -46,7 +83,7 @@ export class UsersService {
       throw new BadRequestException('campo email ou name obrigatorio');
     }
     this.userRepository.merge(user, data);
-    return this.serializer(await this.userRepository.save(user));
+    return userSerializer(await this.userRepository.save(user));
   }
 
   async delete(id: string) {
@@ -54,8 +91,9 @@ export class UsersService {
     this.userRepository.delete(user.id);
   }
 
-  serializer(user: UserEntity) {
-    const { password, createdAt, ...result } = user;
-    return result;
+  async bindUserPerson(id: string, body: PersonsEntity[]) {
+    const user = await this.findOneOrFail({ id });
+    user.favorites = body;
+    return await this.userRepository.save(user);
   }
 }

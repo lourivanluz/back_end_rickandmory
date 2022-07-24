@@ -5,6 +5,7 @@ import {
   findOrCreateEpisodes,
   findOrCreateGenerics,
 } from '../commons/entity.service';
+import { personSerialize } from '../commons/serializers.service';
 import { CreatePersonDto } from './dto/createPerson.dto';
 import { LocationsEntity } from './entities/location.entity';
 import { OriginEntity } from './entities/origin.entity';
@@ -30,19 +31,6 @@ export class PersonsService {
     const result = await this.personRepository.save(
       this.personRepository.create({ ...data, origin, location, episodes }),
     );
-    return this.serializer(result);
-  }
-
-  /* await this.personRepository
-      .createQueryBuilder()
-      .insert()
-      .into(PersonsEntity)
-      .values(data)
-      .execute(); */
-
-  serializer(data: PersonsEntity) {
-    delete data.location.id;
-    delete data.origin.id;
-    return { ...data, episodes: data.episodes.map((item) => item.url) };
+    return personSerialize(result);
   }
 }
