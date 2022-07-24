@@ -14,9 +14,9 @@ export class CreatePersonDto {
   @IsDefined()
   gender: string;
   @IsDefined()
-  origin: OriginEntity[];
+  origin: OriginEntity;
   @IsDefined()
-  location: LocationsEntity[];
+  location: LocationsEntity;
   @IsDefined()
   image: string;
   @IsDefined()
