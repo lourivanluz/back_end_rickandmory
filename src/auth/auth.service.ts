@@ -26,7 +26,10 @@ export class AuthService {
       return null;
     }
     const machPassword = compareSync(password, user.password);
-    if (!machPassword) return null;
+
+    if (!machPassword) {
+      return null;
+    }
 
     return user;
   }

@@ -5,7 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindConditions, getRepository, Repository } from 'typeorm';
+import {
+  FindConditions,
+  FindOneOptions,
+  getRepository,
+  Repository,
+} from 'typeorm';
 import {
   personSerialize,
   userSerializer,
@@ -55,9 +60,12 @@ export class UsersService {
     return user;
   }
 
-  async findOneOrFail(conditions: FindConditions<UserEntity>) {
+  async findOneOrFail(
+    conditions: FindConditions<UserEntity>,
+    options?: FindOneOptions<UserEntity>,
+  ) {
     try {
-      return await this.userRepository.findOneOrFail(conditions);
+      return await this.userRepository.findOneOrFail(conditions, options);
     } catch (error) {
       throw new NotFoundException('Usuario não encontrado');
     }
@@ -66,16 +74,23 @@ export class UsersService {
   async createUser(data: UserDtoCreate) {
     const user = this.userRepository.create(data);
     try {
-      return userSerializer(await this.userRepository.save(user));
+      const newUser = await this.userRepository.save(user);
+
+      return userSerializer(
+        await this.userRepository.findOne({
+          where: { id: newUser.id },
+          relations: ['favorites'],
+        }),
+      );
     } catch (error) {
       throw new ConflictException('Usuario ja existe');
     }
   }
 
   async update(id: string, data: UserDtoUpdate) {
-    const user = await this.findOneOrFail({ id });
+    const user = await this.findOneOrFail({ id }, { relations: ['favorites'] });
     if (!data.email && !data.name) {
-      throw new BadRequestException('campo email ou name obrigatorio');
+      throw new BadRequestException(['campo email ou name obrigatorio']);
     }
     this.userRepository.merge(user, data);
     return userSerializer(await this.userRepository.save(user));
@@ -87,8 +102,8 @@ export class UsersService {
   }
 
   async bindUserPerson(id: string, body: PersonsEntity[]) {
-    const user = await this.findOneOrFail({ id });
+    const user = await this.findOneOrFail({ id }, { relations: ['favorites'] });
     user.favorites = body;
-    return await this.userRepository.save(user);
+    return userSerializer(await this.userRepository.save(user));
   }
 }

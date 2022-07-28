@@ -1,28 +1,50 @@
-import { IsDefined, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 import { LocationsEntity } from '../entities/location.entity';
 import { OriginEntity } from '../entities/origin.entity';
 
 export class CreatePersonDto {
   @IsNotEmpty()
+  @ApiProperty()
   name: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   status: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   species: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   type: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   gender: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   origin: OriginEntity;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   location: LocationsEntity;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   image: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   episode: string[];
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   url: string;
-  @IsDefined()
+
+  @ApiProperty()
+  @IsNotEmpty()
   created: string;
 }
