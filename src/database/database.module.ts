@@ -21,6 +21,12 @@ import { UserEntity } from 'src/app/users/entities/users.entity';
         OriginEntity,
         PersonsEntity,
       ],
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
   ],
 })
