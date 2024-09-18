@@ -13,6 +13,6 @@ export class JWTStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(data: any) {
-    return { id: data.sub, email: data.email };
+    return { sub: data.sub, email: data.email };
   }
 }
