@@ -32,6 +32,7 @@ import { userSerializer } from '../commons/serializers.service';
 import { PersonFullInfoSwagger } from '../swagger/PersonFullInfo.swagger';
 import { CreatePersonDto } from '../persons/dto/createPerson.dto';
 import { PersonCreateSwagger } from '../swagger/PersonCreate.swagger';
+import { IsOwnerGuard } from 'src/auth/auth.guard';
 
 @Controller('api/v1/users/')
 @ApiTags('User routes')
@@ -59,7 +60,7 @@ export class UsersController {
     return await this.userService.findAll();
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'),IsOwnerGuard)
   @Get(':id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Renurn user by id' })
@@ -107,7 +108,7 @@ export class UsersController {
     return await this.userService.createUser(body);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'),IsOwnerGuard)
   @Post(':id/favorites')
   @ApiOperation({ summary: 'Merge favorite characters with user successfully' })
   @ApiBearerAuth()
@@ -161,7 +162,7 @@ export class UsersController {
       : userFavorites;
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'),IsOwnerGuard)
   @Get(':id/favorites')
   @ApiOperation({ summary: 'All user bookmarks returned successfully' })
   @ApiBearerAuth()
@@ -185,7 +186,7 @@ export class UsersController {
     return await this.userService.findFavorites(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'),IsOwnerGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Update user successfully' })
   @ApiBearerAuth()
@@ -216,7 +217,7 @@ export class UsersController {
     return await this.userService.update(id, body);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'),IsOwnerGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user successfully' })
   @ApiBearerAuth()
