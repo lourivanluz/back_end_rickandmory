@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async login(user) {
-    const data = { sub: user.id, email: user.email };
+    const data = { sub: user.sub, email: user.email };
 
     return {
       token: this.jwtService.sign(data),
